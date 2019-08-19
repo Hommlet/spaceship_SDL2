@@ -177,17 +177,24 @@ int main(int argc, char const *argv[])
     Spaceship ship(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
     Planet planet(SCREEN_WIDTH/2 + 100, SCREEN_HEIGHT/2);
 
+    const int SCREEN_FPS = 60;
+    const int SCREEN_TICKS_PER_FRAME = 1000 / SCREEN_FPS;
+    Uint32 startTicks, ticksDifference;
+
     if (!init(&window, &renderer))
         quit = true;
 
-    if (!ship.loadTexture(renderer, "deathstar.png") ||
-        !planet.loadTexture(renderer, "earth.png") ||
-        !background.loadFromFile(renderer, "bg.png"))
+    if (!ship.loadTexture(renderer, "img/deathstar.png") ||
+        !planet.loadTexture(renderer, "img/earth.png") ||
+        !background.loadFromFile(renderer, "img/bg.png"))
         quit = true;
 
     const double SIMULATION_FACTOR = 10.0;
     double last_time = 0.0, t=0.0, now=0.0;
     while (!quit) {
+        
+        startTicks = SDL_GetTicks();
+        
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT)
                 quit = true;
@@ -198,6 +205,7 @@ int main(int argc, char const *argv[])
         now = SDL_GetTicks();
         t = last_time * SIMULATION_FACTOR;
 
+        // For more calculation precision 
         while (t < (now * SIMULATION_FACTOR) -1) {
             handlePhysics(t/SIMULATION_FACTOR, ship, planet);
             t++;
@@ -217,6 +225,12 @@ int main(int argc, char const *argv[])
 
         // Update screen
         SDL_RenderPresent(renderer);
+
+        // Keeping <SCREEN_FPS> FPS
+        ticksDifference = SDL_GetTicks() - startTicks;
+        if (ticksDifference < SCREEN_TICKS_PER_FRAME) {
+            SDL_Delay(SCREEN_TICKS_PER_FRAME - ticksDifference);
+        }
     }
 
     close(&window, &renderer);

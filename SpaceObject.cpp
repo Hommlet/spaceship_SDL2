@@ -23,7 +23,7 @@ bool SpaceObject::loadTexture(SDL_Renderer* renderer, std::string path) {
 
 bool Spaceship::loadTexture(SDL_Renderer* renderer, std::string path) {
     SpaceObject::loadTexture(renderer, path);
-    if (!_flamesTexture.loadFromFile(renderer, "flames.png"))
+    if (!_flamesTexture.loadFromFile(renderer, "img/flames.png"))
         return false;
     
     return true;
